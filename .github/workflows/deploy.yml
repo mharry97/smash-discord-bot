@@ -1,14 +1,49 @@
-# .github/workflows/deploy.yml
+name: Test and Deploy Discord Bot
 
-name: Deploy Discord Bot
-
-# This action runs on every push to the 'main' branch
 on:
   push:
     branches:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run tests with pytest
+        run: python -m pytest
+
   deploy:
     runs-on: ubuntu-latest
-# remove steps for initial commit to droplet
+    needs: test
+    steps:
+      - name: SSH and Deploy
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DO_HOST }}
+          username: ${{ secrets.DO_USER }}
+          key: ${{ secrets.DO_SSH_KEY }}
+          script: |
+            # Navigate to the project directory on your droplet
+            cd /root/smash-discord-bot
+
+            # Pull the latest code from the main branch
+            git pull origin main
+
+            # Install/update Python dependencies into the virtual environment
+            ./.venv/bin/pip install -r requirements.txt
+
+            # Restart the bot application using pm2
+            pm2 restart smash-discord-bot

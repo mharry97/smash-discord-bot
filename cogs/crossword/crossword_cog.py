@@ -34,6 +34,7 @@ class CrosswordCog(commands.Cog):
     @commands.slash_command(name="metrocryptic",
                             description="Fetch the crossword and create a new thread in the channel")
     async def metrocryptic(self, ctx: discord.ApplicationContext):
+
       source = "metrocryptic"
       puzzle_date = datetime.now().strftime('%Y-%m-%d')
       channel_id = ctx.channel.id

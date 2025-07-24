@@ -34,6 +34,8 @@ def check_puzzle_exists(channel_id: int, puzzle: str, source: str):
   cursor.execute("""
     SELECT
       thread_id
+    FROM 
+      crosswords
     WHERE
       channel_id = ? AND puzzle_date = ? AND source = ?
     """, (channel_id, puzzle, source))
@@ -51,8 +53,15 @@ def check_puzzle_exists(channel_id: int, puzzle: str, source: str):
 # Add new crossword to table
 def create_puzzle(thread_id: int, channel_id: str, puzzle_date: str, source: str, width: int, height: int, cells_dict: dict, clues_dict: dict):
   """Inserts a new puzzle record into the database."""
-  # Convert Python dictionaries to JSON strings for storage
-  cells_json = json.dumps(cells_dict)
+  # Convert sets to lists inside the nested cell data
+  for cell_data in cells_dict.values():
+    if 'clues' in cell_data and isinstance(cell_data['clues'], set):
+      cell_data['clues'] = list(cell_data['clues'])
+
+  # Convert tuple keys to strings for JSON compatibility
+  cells_json_compatible = {f"{x},{y}": v for (x, y), v in cells_dict.items()}
+  cells_json = json.dumps(cells_json_compatible)
+
   clues_json = json.dumps(clues_dict)
   status = "running"
 
@@ -80,21 +89,42 @@ def get_puzzle_state(thread_id: int):
   if not row:
     return None
 
-  # Unpack the row and convert JSON strings back to Python dictionaries
+    # Load and convert keys from JSON string
+  cells_from_db = json.loads(row[7])
+  cells_dict = {tuple(map(int, k.split(','))): v for k, v in cells_from_db.items()}
+
+  # Convert lists back to sets inside the nested cell data
+  for cell_data in cells_dict.values():
+    if 'clues' in cell_data and isinstance(cell_data['clues'], list):
+      cell_data['clues'] = set(cell_data['clues'])
+
+  # Unpack the row and build the final state dictionary
   return {
     "thread_id": row[0],
-    "status": row[1],
-    "width": row[2],
-    "height": row[3],
-    "cells": json.loads(row[4]),
-    "clues": json.loads(row[5])
+    "channel_id": row[1],
+    "puzzle_date": row[2],
+    "source": row[3],
+    "status": row[4],
+    "width": row[5],
+    "height": row[6],
+    "cells": cells_dict,
+    "clues": json.loads(row[8])
   }
 
 
 # Update crossword
 def update_puzzle_state(thread_id: int, new_cells: dict, new_clues: dict):
   """Updates the cells and clues JSON for a given puzzle."""
-  cells_json = json.dumps(new_cells)
+
+  # Convert sets to lists inside the nested cell data
+  for cell_data in new_cells.values():
+    if 'clues' in cell_data and isinstance(cell_data['clues'], set):
+      cell_data['clues'] = list(cell_data['clues'])
+
+  # Convert tuple keys to strings for JSON compatibility
+  cells_json_compatible = {f"{x},{y}": v for (x, y), v in new_cells.items()}
+  cells_json = json.dumps(cells_json_compatible)
+
   clues_json = json.dumps(new_clues)
 
   connection = sqlite3.connect(DB_FILE)
@@ -106,6 +136,7 @@ def update_puzzle_state(thread_id: int, new_cells: dict, new_clues: dict):
   )
   connection.commit()
   connection.close()
+
 
 # Update puzzle status
 def update_puzzle_status(thread_id: int, status: str):
