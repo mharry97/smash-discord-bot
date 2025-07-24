@@ -11,27 +11,4 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    steps:
-      - name: SSH and Deploy
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          # Get secrets from GitHub Settings
-          host: ${{ secrets.DO_HOST }}
-          username: ${{ secrets.DO_USER }}
-          key: ${{ secrets.DO_SSH_KEY }}
-          
-          # The script to run on droplet
-          script: |
-            # Navigate to your project directory
-            cd /path/to/your/discord-bot 
-            
-            # Pull the latest changes from the main branch
-            git pull origin main
-            
-            # Install/update dependencies (example for Node.js)
-            npm install
-            # For Python, you might use: pip install -r requirements.txt
-            
-            # Restart the bot using the process manager
-            pm2 restart my-crossword-bot
-            # For systemd, you might use: sudo systemctl restart my-bot.service
+# remove steps for initial commit to droplet
