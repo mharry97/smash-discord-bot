@@ -47,6 +47,9 @@ jobs:
 
             # Install/update Python dependencies into the virtual environment
             ./.venv/bin/pip install -r requirements.txt
+            
+            # Install Playwright's browser binaries
+            ./.venv/bin/playwright install
 
             # Restart the bot application using pm2
             pm2 restart smash-discord-bot
