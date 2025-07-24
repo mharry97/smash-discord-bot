@@ -15,7 +15,8 @@ bot = discord.Bot(intents=discord.Intents.default())
 async def on_ready():
     print("Bot is ready and online!")
 
-# Load the cog
+# Load the cogs
 bot.load_extension("cogs.crossword.crossword_cog")
+bot.load_extension("cogs.misc.misc_cog")
 
 bot.run(TOKEN)
