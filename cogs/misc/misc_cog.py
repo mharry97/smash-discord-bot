@@ -1,5 +1,4 @@
 import random
-from discord.commands import slash_command
 from discord.ext import commands
 
 
@@ -7,7 +6,7 @@ class MiscCog(commands.Cog):
   def __init__(self, bot):
     self.bot = bot
 
-  @slash_command(name="8ball", description="Ask the Magic 8-Ball a question.")
+  @commands.slash_command(name="8ball", description="Ask the Magic 8-Ball a question.")
   async def eight_ball(self, ctx, question: str):
     responses = [
       "It is certain.", "It is decidedly so.", "Without a doubt.",
