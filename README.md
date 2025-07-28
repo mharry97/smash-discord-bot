@@ -16,7 +16,7 @@ The updated crossword and clue list will be sent. Should be used on the thread.
   - Example `/answer clue:5d answer:horse`
 
 - `/remove` Removes the inputted clue from the crossword and sends the updated
-crossword and clues
+crossword and clues. Should be used on the thread.
   - Example `/remove clue:5d`
 
 ## Miscellaneous
@@ -24,4 +24,4 @@ A bot for any small commands that don't require their own cog.
 
 ### Commands
 - `/8ball` Classic fun command that takes a question and responds with 
-an answer from a list of possible answers. Should be used on the thread. Is never wrong.
+an answer from a list of possible answers. Is never wrong.
