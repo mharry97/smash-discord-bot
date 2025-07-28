@@ -9,19 +9,19 @@ each time the user uses a command.
 ### Commands
 - `/metrocryptic` Command that scrapes the crossword, creates a thread
 and then sends the initials state of the crossword and clues. Should be
-on the parent channel instead of in a thread.
+used on the parent channel instead of in a thread.
 
 - `/answer` The command users use to submit an answer for the crossword by providing the clue and answer.
-The updated crossword and clue list will be sent.
+The updated crossword and clue list will be sent. Should be used on the thread.
   - Example `/answer clue:5d answer:horse`
 
 - `/remove` Removes the inputted clue from the crossword and sends the updated
 crossword and clues
-  - Example `/remove 5d`
+  - Example `/remove clue:5d`
 
 ## Miscellaneous
 A bot for any small commands that don't require their own cog.
 
 ### Commands
 - `/8ball` Classic fun command that takes a question and responds with 
-an answer from a list of possible answers. Is never wrong.
+an answer from a list of possible answers. Should be used on the thread. Is never wrong.
